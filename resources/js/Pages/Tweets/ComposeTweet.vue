@@ -8,25 +8,35 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
 import ActionMessage from "@/Components/ActionMessage.vue";
+import { ref } from "vue";
 
 const props = defineProps({
     tweets: Array,
 });
 
 const form = useForm({
-    _method: "POST",
+    _method: "PUT",
     tweets: props.tweets,
 });
 
-const postTweets = () => {
-    form.post(route("compose.store"), {
-        errorBag: "postTweets",
-        preserveScroll: true,
-    });
+const timeout = ref(0);
+
+const updateTweets = () => {
+    clearTimeout(timeout.value);
+    timeout.value = setTimeout(() => {
+        form.put(route("compose.update"), {
+            preserveScroll: true,
+        });
+    }, 500);
 };
 
-const addTweet = () => {
+const addReply = async (id) => {
+    const res = await window.axios.post(route("compose.add-reply", id), {
+        errorBag: "addReply",
+        preserveScroll: true,
+    });
     form.tweets.push({
+        id: res.data.id,
         content: "",
     });
 };
@@ -43,7 +53,7 @@ const addTweet = () => {
         <div>
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
                 <div>
-                    <FormSection @submitted="postTweets">
+                    <FormSection>
                         <template #title> Compose your next Tweet </template>
 
                         <template #description>
@@ -67,13 +77,19 @@ const addTweet = () => {
                                     v-model="tweet.content"
                                     type="text"
                                     class="mt-1 block w-full"
+                                    @input="updateTweets"
                                 />
-                                <div class="flex justify-between">
-                                    <InputError
-                                        :message="form.errors.twitter_api_key"
-                                        class="mt-2"
-                                    />
-                                    <div>
+                                <div class="grid grid-cols-3 mt-2">
+                                    <div class="col-span-2">
+                                        <InputError
+                                            :message="
+                                                form.errors[
+                                                    `tweets.${index}.content`
+                                                ]
+                                            "
+                                        />
+                                    </div>
+                                    <div class="text-sm text-right">
                                         {{ tweet.content?.length ?? 0 }}
                                         / {{ 280 }}
                                     </div>
@@ -89,16 +105,11 @@ const addTweet = () => {
                                 Saved.
                             </ActionMessage>
 
-                            <SecondaryButton @click="addTweet" class="mr-3"
+                            <SecondaryButton
+                                @click="addReply(tweets[tweets.length - 1])"
+                                class="mr-3"
                                 >Add</SecondaryButton
                             >
-
-                            <PrimaryButton
-                                :class="{ 'opacity-25': form.processing }"
-                                :disabled="form.processing"
-                            >
-                                Save
-                            </PrimaryButton>
                         </template>
                     </FormSection>
                 </div>

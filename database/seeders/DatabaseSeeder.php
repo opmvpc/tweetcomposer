@@ -3,45 +3,84 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Medium;
+use App\Models\Tweet;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    protected $faker;
+
+    public function __construct()
+    {
+        $this->faker = \Faker\Factory::create();
+    }
+
     /**
      * Seed the application's database.
      */
     public function run()
     {
-        $faker = \Faker\Factory::create();
+        $this->createUsers()->each(function (User $user) {
+            $this->createTweets($user);
+        });
+    }
 
-        \App\Models\User::factory()
+    protected function createUsers()
+    {
+        User::factory()
             ->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ])
         ;
-        \App\Models\User::factory(9)->create();
+        User::factory(9)->create();
 
-        $users = \App\Models\User::all();
+        return User::all();
+    }
 
-        foreach ($users as $user) {
-            $tweetCount = $faker->numberBetween(20, 50);
-            for ($i = 0; $i < $tweetCount; ++$i) {
-                $tweet = \App\Models\Tweet::factory()
-                    ->create([
-                        'user_id' => $user->id,
-                    ])
-                ;
+    protected function createTweets(User $user)
+    {
+        $tweetCount = $this->faker->numberBetween(20, 50);
+        for ($i = 0; $i < $tweetCount; ++$i) {
+            $tweet = Tweet::factory()
+                ->create([
+                    'user_id' => $user->id,
+                ])
+            ;
+            $this->addMedias($tweet);
+            $this->createReplies($tweet, $user);
+        }
+    }
 
-                $mediaCount = $faker->numberBetween(0, 4);
-                for ($j = 0; $j < $mediaCount; ++$j) {
-                    \App\Models\Media::factory()
-                        ->create([
-                            'tweet_id' => $tweet->id,
-                        ])
-                    ;
-                }
-            }
+    protected function createReplies(Tweet $tweet, User $user)
+    {
+        $repliesCount = $this->faker->numberBetween(0, 6);
+        $previousTweet = $tweet;
+        for ($j = 0; $j < $repliesCount; ++$j) {
+            $reply = Tweet::factory()
+                ->create([
+                    'user_id' => $user->id,
+                    'tweet_id' => $previousTweet->id,
+                    'scheduled_at' => null,
+                ])
+            ;
+            $previousTweet = $reply;
+            $this->addMedias($reply);
+        }
+    }
+
+    protected function addMedias(Tweet $tweet)
+    {
+        $mediaCount = $this->faker->numberBetween(0, 4);
+        for ($i = 0; $i < $mediaCount; ++$i) {
+            Medium::factory()
+                ->create([
+                    'tweet_id' => $tweet->id,
+                ])
+            ;
         }
     }
 }

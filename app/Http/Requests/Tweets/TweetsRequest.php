@@ -24,7 +24,8 @@ class TweetsRequest extends FormRequest
     public function rules()
     {
         return [
-            'tweets.*.content' => 'required|string|max:280',
+            'tweets.*.id' => 'required|integer|exists:tweets,id',
+            'tweets.*.content' => 'nullable|string|max:280',
         ];
     }
 }

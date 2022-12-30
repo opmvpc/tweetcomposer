@@ -41,7 +41,8 @@ Route::middleware([
     Route::put('/profile/social-api-key', [SocialApiKeyController::class, 'update'])->name('social-api-key.update');
 
     Route::get('/compose/{id?}', [ComposeTweetController::class, 'index'])->name('compose.index');
-    Route::post('/compose', [ComposeTweetController::class, 'store'])->name('compose.store');
+    Route::put('/compose', [ComposeTweetController::class, 'update'])->name('compose.update');
+    Route::post('/compose/{id}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
     Route::resource('/tweets', TweetController::class)->only(['index']);
 });

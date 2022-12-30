@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Media>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Medium>
  */
-class MediaFactory extends Factory
+class MediumFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class MediaFactory extends Factory
     public function definition()
     {
         return [
-            'url' => $this->faker->imageUrl(),
+            'url' => $this->faker->imageUrl(640, 480, 'animals', true, '', true, 'jpg'),
         ];
     }
 }

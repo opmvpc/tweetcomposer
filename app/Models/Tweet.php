@@ -20,7 +20,7 @@ class Tweet extends Model
 
     public function medium()
     {
-        return $this->hasMany(Media::class);
+        return $this->hasMany(Medium::class);
     }
 
     public function user()
@@ -30,12 +30,12 @@ class Tweet extends Model
 
     public function child()
     {
-        return $this->belongsTo(Tweet::class, 'tweet_id');
+        return $this->hasOne(Tweet::class, 'tweet_id');
     }
 
     public function parent()
     {
-        return $this->hasOne(Tweet::class, 'tweet_id');
+        return $this->belongsTo(Tweet::class, 'tweet_id');
     }
 
     /**
@@ -46,18 +46,17 @@ class Tweet extends Model
     public function getTweetAndReplies()
     {
         $children = collect();
-        $children->push($this);
         $current = $this;
-        while ($current->child) {
-            $children->push($this->child);
-        }
 
-        return $children->map(function ($tweet) {
-            return $tweet->only(
+        do {
+            $children->push($current->only(
                 'id',
                 'content'
-            );
-        });
+            ));
+            $current = $current->child;
+        } while ($current);
+
+        return $children;
     }
 
     public function scopeDrafts($query)
