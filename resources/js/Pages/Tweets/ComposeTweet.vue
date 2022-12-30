@@ -12,6 +12,7 @@ import { ref } from "vue";
 import Media from "./Partials/Media.vue";
 
 const props = defineProps({
+    thread: Object,
     tweets: Array,
 });
 
@@ -25,17 +26,20 @@ const timeout = ref(0);
 const updateTweets = () => {
     clearTimeout(timeout.value);
     timeout.value = setTimeout(() => {
-        form.put(route("compose.update"), {
+        form.put(route("compose.update", props.thread.id), {
             preserveScroll: true,
         });
-    }, 500);
+    }, 300);
 };
 
-const addReply = async (id) => {
-    const res = await window.axios.post(route("compose.add-reply", id), {
-        errorBag: "addReply",
-        preserveScroll: true,
-    });
+const addReply = async () => {
+    const res = await window.axios.post(
+        route("compose.add-reply", props.thread.id),
+        {
+            errorBag: "addReply",
+            preserveScroll: true,
+        }
+    );
     form.tweets.push({
         id: res.data.id,
         content: "",
@@ -108,9 +112,7 @@ const addReply = async (id) => {
                                 Saved.
                             </ActionMessage>
 
-                            <SecondaryButton
-                                @click="addReply(tweets[tweets.length - 1])"
-                                class="mr-3"
+                            <SecondaryButton @click="addReply()" class="mr-3"
                                 >Add</SecondaryButton
                             >
                         </template>

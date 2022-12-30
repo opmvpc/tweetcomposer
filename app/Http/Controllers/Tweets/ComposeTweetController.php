@@ -4,47 +4,51 @@ namespace App\Http\Controllers\Tweets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tweets\TweetsRequest;
+use App\Models\Thread;
 use App\Models\Tweet;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ComposeTweetController extends Controller
 {
-    public function index(?int $id = null)
+    public function index(?int $threadId = null)
     {
-        if (null !== $id) {
-            $tweet = Tweet::with(['media'])->findOrFail($id);
+        if (null !== $threadId) {
+            $thread = Thread::findOrFail($threadId);
         } else {
-            $tweet = Auth::user()->tweets()->create();
+            $thread = Auth::user()->threads()->create(['title' => 'Untitled']);
+            $thread->tweets()->create();
         }
 
         return Inertia::render('Tweets/ComposeTweet', [
-            'tweets' => $tweet->getTweetAndReplies(),
+            'thread' => $thread,
+            'tweets' => $thread->getTweetAndReplies(),
         ]);
     }
 
-    public function update(TweetsRequest $request)
+    public function update(TweetsRequest $request, int $threadId)
     {
         foreach ($request->validated()['tweets'] as $tweet) {
             $current = Tweet::findOrFail($tweet['id']);
             $current->update($tweet);
         }
 
-        $firstTweet = $request->validated()['tweets'][0];
+        $thread = Thread::findOrFail($threadId);
+        $thread->title = Str::limit($request->validated()['tweets'][0]['content'], 30) ?? 'Untitled';
+        $thread->save();
 
-        return redirect()->route('compose.index', ['id' => $firstTweet['id']]);
+        return redirect()->route('compose.index', ['threadId' => $threadId]);
     }
 
-    public function addReply(int $id)
+    public function addReply(int $threadId)
     {
-        $tweet = Tweet::findOrFail($id);
+        $thread = Thread::findOrFail($threadId);
 
-        $child = $tweet->child()->create();
-        $child->user_id = Auth::id();
-        $child->save();
+        $tweet = $thread->tweets()->create();
 
         return response()->json([
-            'id' => $child->id,
+            'id' => $tweet->id,
         ]);
     }
 }

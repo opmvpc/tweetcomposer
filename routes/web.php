@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Profile\SocialApiKeyController;
 use App\Http\Controllers\Tweets\ComposeTweetController;
-use App\Http\Controllers\Tweets\TweetController;
+use App\Http\Controllers\Tweets\ThreadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,9 +40,9 @@ Route::middleware([
 
     Route::put('/profile/social-api-key', [SocialApiKeyController::class, 'update'])->name('social-api-key.update');
 
-    Route::get('/compose/{id?}', [ComposeTweetController::class, 'index'])->name('compose.index');
-    Route::put('/compose', [ComposeTweetController::class, 'update'])->name('compose.update');
-    Route::post('/compose/{id}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
+    Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
+    Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
+    Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
-    Route::resource('/tweets', TweetController::class)->only(['index']);
+    Route::resource('/tweets', ThreadController::class)->only(['index']);
 });

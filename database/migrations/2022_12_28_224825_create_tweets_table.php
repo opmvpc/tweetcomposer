@@ -13,9 +13,7 @@ return new class() extends Migration {
         Schema::create('tweets', function (Blueprint $table) {
             $table->id();
             $table->string('content', 280)->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users');
-            $table->foreignId('tweet_id')->nullable()->constrained('tweets');
-            $table->dateTimeTz('scheduled_at')->nullable();
+            $table->foreignId('thread_id')->nullable()->constrained('threads');
             $table->timestamps();
         });
     }

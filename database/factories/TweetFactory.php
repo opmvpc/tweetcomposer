@@ -18,7 +18,6 @@ class TweetFactory extends Factory
     {
         return [
             'content' => $this->faker->sentence,
-            'scheduled_at' => $this->faker->randomElement([null, $this->faker->dateTimeBetween('-1 week', '+1 week'), $this->faker->dateTimeBetween('-1 week', '+1 week')]),
         ];
     }
 }

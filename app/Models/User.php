@@ -61,8 +61,8 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function tweets()
+    public function threads()
     {
-        return $this->hasMany(Tweet::class);
+        return $this->hasMany(Thread::class);
     }
 }

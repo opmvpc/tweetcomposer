@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TweetCard from "../../Components/TweetCard.vue";
+import ThreadCard from "./Partials/ThreadCard.vue";
 
 const props = defineProps({
     drafts: Array,
@@ -22,23 +22,23 @@ const props = defineProps({
                 <div class="grid grid-cols-3 gap-8">
                     <div class="flex flex-col space-y-4">
                         <h3>Drafts</h3>
-                        <TweetCard
-                            v-for="tweet in props.drafts"
-                            :tweet="tweet"
+                        <ThreadCard
+                            v-for="thread in props.drafts"
+                            :thread="thread"
                         />
                     </div>
                     <div class="flex flex-col space-y-4">
                         <h3>Scheduled</h3>
-                        <TweetCard
-                            v-for="tweet in props.scheduled"
-                            :tweet="tweet"
+                        <ThreadCard
+                            v-for="thread in props.scheduled"
+                            :thread="thread"
                         />
                     </div>
                     <div class="flex flex-col space-y-4">
                         <h3>Posted</h3>
-                        <TweetCard
-                            v-for="tweet in props.posted"
-                            :tweet="tweet"
+                        <ThreadCard
+                            v-for="thread in props.posted"
+                            :thread="thread"
                         />
                     </div>
                 </div>

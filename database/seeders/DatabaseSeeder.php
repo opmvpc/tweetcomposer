@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Medium;
+use App\Models\Thread;
 use App\Models\Tweet;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -43,31 +44,22 @@ class DatabaseSeeder extends Seeder
 
     protected function createTweets(User $user)
     {
-        $tweetCount = $this->faker->numberBetween(20, 50);
-        for ($i = 0; $i < $tweetCount; ++$i) {
-            $tweet = Tweet::factory()
+        $threadCount = $this->faker->numberBetween(20, 50);
+        for ($i = 0; $i < $threadCount; ++$i) {
+            $thread = Thread::factory()
                 ->create([
                     'user_id' => $user->id,
                 ])
             ;
-            $this->addMedias($tweet);
-            $this->createReplies($tweet, $user);
+            $this->createReplies($thread, $user);
         }
     }
 
-    protected function createReplies(Tweet $tweet, User $user)
+    protected function createReplies(Thread $thread, User $user)
     {
-        $repliesCount = $this->faker->numberBetween(0, 6);
-        $previousTweet = $tweet;
-        for ($j = 0; $j < $repliesCount; ++$j) {
-            $reply = Tweet::factory()
-                ->create([
-                    'user_id' => $user->id,
-                    'tweet_id' => $previousTweet->id,
-                    'scheduled_at' => null,
-                ])
-            ;
-            $previousTweet = $reply;
+        $tweetCount = $this->faker->numberBetween(0, 6);
+        for ($j = 0; $j < $tweetCount; ++$j) {
+            $reply = Tweet::factory()->for($thread, 'thread')->create();
             $this->addMedias($reply);
         }
     }
