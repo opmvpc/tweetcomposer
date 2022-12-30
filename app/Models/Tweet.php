@@ -18,7 +18,7 @@ class Tweet extends Model
         'scheduled_at' => 'datetime',
     ];
 
-    public function medium()
+    public function media()
     {
         return $this->hasMany(Medium::class);
     }
@@ -51,7 +51,8 @@ class Tweet extends Model
         do {
             $children->push($current->only(
                 'id',
-                'content'
+                'content',
+                'media',
             ));
             $current = $current->child;
         } while ($current);

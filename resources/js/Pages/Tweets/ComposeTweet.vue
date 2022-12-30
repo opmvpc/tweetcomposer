@@ -9,6 +9,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
 import ActionMessage from "@/Components/ActionMessage.vue";
 import { ref } from "vue";
+import Media from "./Partials/Media.vue";
 
 const props = defineProps({
     tweets: Array,
@@ -94,6 +95,8 @@ const addReply = async (id) => {
                                         / {{ 280 }}
                                     </div>
                                 </div>
+
+                                <Media :tweet="tweet" />
                             </div>
                         </template>
 

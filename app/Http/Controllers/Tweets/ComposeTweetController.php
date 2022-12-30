@@ -13,7 +13,7 @@ class ComposeTweetController extends Controller
     public function index(?int $id = null)
     {
         if (null !== $id) {
-            $tweet = Tweet::findOrFail($id);
+            $tweet = Tweet::with(['media'])->findOrFail($id);
         } else {
             $tweet = Auth::user()->tweets()->create();
         }
