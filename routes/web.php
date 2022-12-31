@@ -45,4 +45,6 @@ Route::middleware([
     Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
     Route::resource('/tweets', ThreadController::class)->only(['index']);
+
+    Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
 });

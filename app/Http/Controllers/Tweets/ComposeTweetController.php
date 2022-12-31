@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tweets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tweets\TweetsRequest;
+use App\Http\Requests\Tweets\UploadMediaRequest;
 use App\Models\Thread;
 use App\Models\Tweet;
 use Illuminate\Support\Facades\Auth;
@@ -50,5 +51,15 @@ class ComposeTweetController extends Controller
         return response()->json([
             'id' => $tweet->id,
         ]);
+    }
+
+    public function uploadMedia(UploadMediaRequest $request, int $tweetId)
+    {
+        $tweet = Tweet::findOrFail($tweetId);
+
+        foreach ($request->validated()['files'] as $file) {
+            // save file to storage
+            
+        }
     }
 }
