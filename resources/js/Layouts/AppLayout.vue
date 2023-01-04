@@ -63,8 +63,8 @@ const logout = () => {
                                 </NavLink>
 
                                 <NavLink
-                                    :href="route('tweets.index')"
-                                    :active="route().current('tweets.index')"
+                                    :href="route('threads.index')"
+                                    :active="route().current('threads.index')"
                                 >
                                     Tweets
                                 </NavLink>

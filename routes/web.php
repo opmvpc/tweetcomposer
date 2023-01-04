@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Profile\SocialApiKeyController;
 use App\Http\Controllers\Tweets\ComposeTweetController;
 use App\Http\Controllers\Tweets\ThreadController;
+use App\Http\Controllers\TwitterProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,9 +34,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile/social-api-key', [SocialApiKeyController::class, 'index'])->name('social-api-key.index');
 
@@ -44,7 +44,16 @@ Route::middleware([
     Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
     Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
-    Route::resource('/tweets', ThreadController::class)->only(['index']);
+    Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
 
     Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
+
+    Route::get('/twitter-profile', [TwitterProfileController::class, 'index'])->name('twitter-profile.index');
+    Route::get('/auth/twitter/redirect', [TwitterProfileController::class, 'addTwitterAccount'])->name('twitter-profile.create');
+    Route::get('/auth/twitter/callback', [TwitterProfileController::class, 'store'])->name('twitter-profile.store');
+    Route::put('/twitter-profile/select', [TwitterProfileController::class, 'updateSelectedProfile'])->name('twitter-profile.select.update');
+});
+
+Route::get('test', function () {
+    // new \App\Services\Twitter\TwitterApi();
 });

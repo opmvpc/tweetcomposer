@@ -1,49 +1,63 @@
 <script setup>
 import { useForm } from "@inertiajs/inertia-vue3";
+import InputError from "@/Components/InputError.vue";
 
 const props = defineProps({
     tweet: Object,
 });
 
+const emit = defineEmits(["updateMedia"]);
+
 const form = useForm({
-    _method: "PUT",
+    _method: "POST",
     files: [],
 });
 
 const handleFilesUpload = (e) => {
     form.files = e.target.files;
-    form.progress = null;
-    form.put(route("tweets.media.store", props.tweet.id));
+    form.post(route("media.upload", props.tweet.id), {
+        onSuccess: () => {
+            emit("updateMedia");
+        },
+        progress: (e) => {
+            form.progress = e;
+        },
+        preserveScroll: true,
+    });
 };
 </script>
+
 <template>
-    <!-- Media -->
-    <div class="grid grid-cols-4 gap-4 mt-2">
-        <div v-for="medium in tweet.media">
-            <img
-                class="h-12 rounded shadow object-cover object-center"
-                :src="medium.url"
-            />
-        </div>
-        <div
-            class="bg-gray-200 text-xs flex items-center justify-center h-12 rounded shadow cursor-pointer p-2 text-center"
-        >
-            <div>Add media</div>
-            <form @submit.prevent="submit">
-                <input
-                    type="file"
-                    @input="handleFilesUpload"
-                    multiple
-                    accept="image/png, image/jpeg"
+    <div class="flex flex-col">
+        <div class="grid grid-cols-4 gap-4 mt-2">
+            <div v-for="medium in tweet.media">
+                <img
+                    class="rounded shadow object-cover object-center"
+                    :src="medium.url"
                 />
-                <progress
-                    v-if="form.progress"
-                    :value="form.progress.percentage"
-                    max="100"
-                >
-                    {{ form.progress.percentage }}%
-                </progress>
-            </form>
+            </div>
+            <div
+                v-show="tweet.media.length < 4"
+                class="bg-gray-200 text-xs flex items-center justify-center min-h-12 rounded shadow cursor-pointer p-2 text-center"
+                @click="$refs.fileInput.click()"
+            >
+                <div>Add media</div>
+            </div>
         </div>
+        <form @submit.prevent="submit">
+            <input
+                ref="fileInput"
+                class="hidden"
+                type="file"
+                @input="handleFilesUpload"
+                multiple
+                accept="image/png, image/jpeg, image/gif, video/mp4"
+            />
+        </form>
+        <InputError
+            class="mt-2"
+            v-for="errorMessage in form.errors"
+            :message="errorMessage"
+        />
     </div>
 </template>

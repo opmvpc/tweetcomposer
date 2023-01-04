@@ -4,16 +4,20 @@ import { useForm } from "@inertiajs/inertia-vue3";
 import FormSection from "@/Components/FormSection.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
 import ActionMessage from "@/Components/ActionMessage.vue";
 import { ref } from "vue";
 import Media from "./Partials/Media.vue";
+import { Inertia } from "@inertiajs/inertia";
+import ThreadInfo from "./Partials/ThreadInfo.vue";
+import SectionBorder from "@/Components/SectionBorder.vue";
 
 const props = defineProps({
     thread: Object,
     tweets: Array,
+    profiles: Array,
+    selectedProfileId: Number,
 });
 
 const form = useForm({
@@ -43,6 +47,13 @@ const addReply = async () => {
     form.tweets.push({
         id: res.data.id,
         content: "",
+        media: [],
+    });
+};
+
+const fetchMedia = () => {
+    Inertia.visit(route("compose.index", props.thread.id), {
+        preserveScroll: true,
     });
 };
 </script>
@@ -58,7 +69,15 @@ const addReply = async () => {
         <div>
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
                 <div>
-                    <FormSection>
+                    <ThreadInfo
+                        :threadId="props.thread.id"
+                        :profiles="props.profiles"
+                        :selected-profile-id="props.selectedProfileId"
+                    />
+                </div>
+                <SectionBorder />
+                <div>
+                    <FormSection class="mt-10 sm:mt-0">
                         <template #title> Compose your next Tweet </template>
 
                         <template #description>
@@ -100,7 +119,10 @@ const addReply = async () => {
                                     </div>
                                 </div>
 
-                                <Media :tweet="tweet" />
+                                <Media
+                                    :tweet="tweet"
+                                    @update-media="fetchMedia"
+                                />
                             </div>
                         </template>
 

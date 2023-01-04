@@ -10,6 +10,7 @@ class Medium extends Model
     use HasFactory;
 
     protected $fillable = [
+        'path',
         'url',
     ];
 

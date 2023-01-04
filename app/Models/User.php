@@ -26,9 +26,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'twitter_api_key',
-        'instagram_api_key',
         'gpt_api_key',
+        'twitter_id',
+        'twitter_token',
+        'twitter_refresh_token',
+        'twitter_expires_in',
     ];
 
     /**
@@ -64,5 +66,15 @@ class User extends Authenticatable
     public function threads()
     {
         return $this->hasMany(Thread::class);
+    }
+
+    public function twitterProfiles()
+    {
+        return $this->hasMany(TwitterProfile::class);
+    }
+
+    public function selectedTwitterProfile()
+    {
+        return $this->belongsTo(TwitterProfile::class);
     }
 }

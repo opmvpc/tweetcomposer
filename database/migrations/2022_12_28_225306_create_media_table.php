@@ -12,8 +12,9 @@ return new class() extends Migration {
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->string('url');
-            $table->foreignId('tweet_id')->constrained('tweets');
+            $table->string('path')->nullable();
+            $table->string('url')->nullable();
+            $table->foreignId('tweet_id')->constrained('tweets')->cascadeOnDelete();
             $table->timestamps();
         });
     }

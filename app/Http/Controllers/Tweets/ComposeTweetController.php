@@ -8,6 +8,7 @@ use App\Http\Requests\Tweets\UploadMediaRequest;
 use App\Models\Thread;
 use App\Models\Tweet;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -19,12 +20,18 @@ class ComposeTweetController extends Controller
             $thread = Thread::findOrFail($threadId);
         } else {
             $thread = Auth::user()->threads()->create(['title' => 'Untitled']);
+            $thread->twitter_profile_id = Auth::user()->twitter_profile_id;
+            $thread->save();
             $thread->tweets()->create();
+
+            return redirect()->route('compose.index', ['threadId' => $thread->id]);
         }
 
         return Inertia::render('Tweets/ComposeTweet', [
-            'thread' => $thread,
+            'thread' => $thread->only('id'),
             'tweets' => $thread->getTweetAndReplies(),
+            'profiles' => Auth::user()->twitterProfiles,
+            'selectedProfileId' => $thread->twitter_profile_id,
         ]);
     }
 
@@ -58,8 +65,12 @@ class ComposeTweetController extends Controller
         $tweet = Tweet::findOrFail($tweetId);
 
         foreach ($request->validated()['files'] as $file) {
-            // save file to storage
-            
+            $dir = sprintf('public/users/%d/tweets/%d', Auth::id(), $tweet->id);
+            $path = $file->store($dir);
+            $tweet->media()->create([
+                'path' => $path,
+                'url' => Storage::url($path),
+            ]);
         }
     }
 }

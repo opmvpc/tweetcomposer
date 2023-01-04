@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Tweets;
+namespace App\Http\Requests\TwitterProfile;
 
-use App\Models\Tweet;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UploadMediaRequest extends FormRequest
+class SelectProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +23,8 @@ class UploadMediaRequest extends FormRequest
      */
     public function rules()
     {
-        $mediaCount = Tweet::findOrFail($this->tweetId)->media()->count();
-
         return [
-            'files' => ['required', 'array', sprintf('max:%s', 4 - $mediaCount)],
-            'files.*' => ['required', 'file', 'mimes:jpg,jpeg,png,gif', 'max:10240'],
+            'selectedProfileId' => ['required', 'integer', 'exists:twitter_profiles,id'],
         ];
     }
 }

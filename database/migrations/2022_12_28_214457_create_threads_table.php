@@ -14,7 +14,8 @@ return new class() extends Migration {
             $table->id();
             $table->string('title')->nullable();
             $table->dateTimeTz('scheduled_at')->nullable();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('twitter_profile_id')->nullable()->constrained('twitter_profiles')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Medium;
 use App\Models\Thread;
 use App\Models\Tweet;
+use App\Models\TwitterProfile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -25,8 +26,24 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->createUsers()->each(function (User $user) {
-            $this->createTweets($user);
+            $this->createTwitterProfiles($user);
+            $this->createThreads($user);
         });
+    }
+
+    protected function createTwitterProfiles(User $user)
+    {
+        $profileCount = $this->faker->numberBetween(1, 3);
+        for ($i = 0; $i < $profileCount; ++$i) {
+            $twitterProfile = TwitterProfile::factory()
+                ->create([
+                    'user_id' => $user->id,
+                ])
+            ;
+
+            $user->twitter_profile_id = $twitterProfile->id;
+            $user->save();
+        }
     }
 
     protected function createUsers()
@@ -42,29 +59,31 @@ class DatabaseSeeder extends Seeder
         return User::all();
     }
 
-    protected function createTweets(User $user)
+    protected function createThreads(User $user)
     {
         $threadCount = $this->faker->numberBetween(20, 50);
+        $twitterProfilesIds = $user->twitterProfiles->pluck('id')->toArray();
         for ($i = 0; $i < $threadCount; ++$i) {
             $thread = Thread::factory()
                 ->create([
                     'user_id' => $user->id,
+                    'twitter_profile_id' => $this->faker->randomElement($twitterProfilesIds),
                 ])
             ;
-            $this->createReplies($thread, $user);
+            $this->createTweets($thread);
         }
     }
 
-    protected function createReplies(Thread $thread, User $user)
+    protected function createTweets(Thread $thread)
     {
-        $tweetCount = $this->faker->numberBetween(0, 6);
+        $tweetCount = $this->faker->numberBetween(1, 6);
         for ($j = 0; $j < $tweetCount; ++$j) {
-            $reply = Tweet::factory()->for($thread, 'thread')->create();
-            $this->addMedias($reply);
+            $tweet = Tweet::factory()->for($thread, 'thread')->create();
+            $this->createMedia($tweet);
         }
     }
 
-    protected function addMedias(Tweet $tweet)
+    protected function createMedia(Tweet $tweet)
     {
         $mediaCount = $this->faker->numberBetween(0, 4);
         for ($i = 0; $i < $mediaCount; ++$i) {

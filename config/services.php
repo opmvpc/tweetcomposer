@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -31,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'twitter' => [
+        'client_id' => env('TWITTER_API_ID_V1'),
+        'client_secret' => env('TWITTER_API_SECRET_V1'),
+        'bearer_token' => env('TWITTER_BEARER_TOKEN'),
+        'redirect' => env('TWITTER_REDIRECT_URL'),
+    ],
 ];
