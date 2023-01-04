@@ -34,26 +34,26 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::middleware([
+        'hasTwitterProfile',
+    ])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/profile/social-api-key', [SocialApiKeyController::class, 'index'])->name('social-api-key.index');
+        Route::get('/profile/social-api-key', [SocialApiKeyController::class, 'index'])->name('social-api-key.index');
 
-    Route::put('/profile/social-api-key', [SocialApiKeyController::class, 'update'])->name('social-api-key.update');
+        Route::put('/profile/social-api-key', [SocialApiKeyController::class, 'update'])->name('social-api-key.update');
 
-    Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
-    Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
-    Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
+        Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
+        Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
+        Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
-    Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
+        Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
 
-    Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
-
+        Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
+    });
     Route::get('/twitter-profile', [TwitterProfileController::class, 'index'])->name('twitter-profile.index');
     Route::get('/auth/twitter/redirect', [TwitterProfileController::class, 'addTwitterAccount'])->name('twitter-profile.create');
     Route::get('/auth/twitter/callback', [TwitterProfileController::class, 'store'])->name('twitter-profile.store');
     Route::put('/twitter-profile/select', [TwitterProfileController::class, 'updateSelectedProfile'])->name('twitter-profile.select.update');
-});
-
-Route::get('test', function () {
-    // new \App\Services\Twitter\TwitterApi();
+    Route::delete('/twitter-profile/{twitterProfileId}', [TwitterProfileController::class, 'destroy'])->name('twitter-profile.destroy');
 });

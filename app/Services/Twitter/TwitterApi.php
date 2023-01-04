@@ -2,65 +2,58 @@
 
 namespace App\Services\Twitter;
 
+use App\Models\Thread;
 use Coderjerk\BirdElephant\BirdElephant;
-use Illuminate\Support\Facades\Auth;
+use Coderjerk\BirdElephant\Compose\Media;
+use Coderjerk\BirdElephant\Compose\Tweet;
 
 class TwitterApi
 {
-    public function __construct()
+    public static function thread(Thread $thread)
     {
-        $this->setupAuth();
+        $credentials = static::setupAuth($thread);
+        $api = new BirdElephant($credentials);
+        static::sendThread($api, $thread);
     }
 
-    public function setupAuth()
+    protected static function setupAuth(Thread $thread): array
     {
-        $user = Auth::user();
-        $token = $user->twitter_token;
+        $token_identifier = $thread->twitterProfile->token;
+        $token_secret = $thread->twitterProfile->token_secret;
 
-        // your credentials, should be passed in via $_ENV or similar, don't hardcode.
-        $credentials = [
+        return [
             'bearer_token' => config('services.twitter.bearer_token'),
             'consumer_key' => config('services.twitter.client_id'),
             'consumer_secret' => config('services.twitter.client_secret'),
-            // if using oAuth 2.0 with PKCE
-            'auth_token' => $token, // OAuth 2.0 auth token
-            // if using oAuth 1.0a
-            'token_identifier' => $user->twitter_id,
-            'token_secret' => $token,
+            'token_identifier' => $token_identifier,
+            'token_secret' => $token_secret,
         ];
+    }
 
-        // instantiate the object
-        $twitter = new BirdElephant($credentials);
+    protected static function sendThread(BirdElephant $api, Thread $thread)
+    {
+        $thread->tweets()->get()->each(function ($tweet) use ($api) {
+            $media = static::uploadMedia($api, $tweet);
 
-        $image = $twitter->tweets()->upload(storage_path('app/public/users/1/tweets/1228/NMPwa0IPVQGWoZ4KHln91LFFxvvVTg0OTamoNEya.jpg'));
+            $tweet = (new Tweet())->text($tweet->content)
+                ->media($media)
+            ;
 
-        // pass the returned media id to a media object as an array
-        $media = (new \Coderjerk\BirdElephant\Compose\Media())->mediaIds(
-            [
-                $image->media_id_string,
-            ]
+            $api->tweets()->tweet($tweet);
+        });
+    }
+
+    protected static function uploadMedia(BirdElephant $api, $tweet): Media
+    {
+        $mediaIds = [];
+        $tweet->media()->get()->each(function ($media) use ($api, &$mediaIds) {
+            $imgPath = storage_path('app/'.$media->path);
+            $medium = $api->tweets()->upload($imgPath);
+            $mediaIds[] = $medium->media_id_string;
+        });
+
+        return (new Media())->mediaIds(
+            $mediaIds
         );
-
-        // //compose the tweet and pass along the media object
-        $tweet = (new \Coderjerk\BirdElephant\Compose\Tweet())->text('Hello')
-            ->media($media)
-        ;
-
-        $twitter->tweets()->tweet($tweet);
-
-        // get a user's followers using the handy helper methods
-        // $followers = $twitter->user('A_imaginarium')->followers();
-        // dd($followers);
-
-        // pass your query params to the methods directly
-        // $following = $twitter->user('coderjerk')->following([
-        //     'max_results' => 20,
-        //     'user.fields' => 'profile_image_url',
-        // ]);
-
-        // tweet something
-        // $tweet = (new \Coderjerk\BirdElephant\Compose\Tweet())->text('Hello');
-
-        // $twitter->tweets()->tweet($tweet);
     }
 }

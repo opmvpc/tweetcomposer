@@ -25,9 +25,9 @@ class TwitterProfileController extends Controller
     public function store()
     {
         $twitterUser = Socialite::driver('twitter')->user();
-        // dd($twitterUser);
+
         $user = Auth::user();
-        $user->twitterProfiles()->updateOrCreate(
+        $profile = $user->twitterProfiles()->updateOrCreate(
             [
                 'twitter_id' => $twitterUser->id,
             ],
@@ -39,6 +39,11 @@ class TwitterProfileController extends Controller
             ]
         );
 
+        if (null === $user->twitter_profile_id) {
+            $user->twitter_profile_id = $profile->id;
+            $user->save();
+        }
+
         return redirect()->route('twitter-profile.index');
     }
 
@@ -47,5 +52,13 @@ class TwitterProfileController extends Controller
         $user = Auth::user();
         $user->twitter_profile_id = $request->validated()['selectedProfileId'];
         $user->save();
+    }
+
+    public function destroy(int $twitterProfileId)
+    {
+        $twitterProfile = TwitterProfile::findOrFail($twitterProfileId);
+        $twitterProfile->delete();
+
+        return redirect()->route('twitter-profile.index');
     }
 }
