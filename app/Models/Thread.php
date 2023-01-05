@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Thread extends Model
 {
@@ -11,11 +14,15 @@ class Thread extends Model
 
     protected $fillable = [
         'title',
+        'post_as_thread',
+        'is_posted',
         'scheduled_at',
     ];
 
     protected $casts = [
         'scheduled_at' => 'datetime',
+        'is_posted' => 'boolean',
+        'post_as_thread' => 'boolean',
     ];
 
     public function user()
@@ -115,8 +122,33 @@ class Thread extends Model
                 'nickname',
                 'avatar',
             ),
-            'updated_at' => $thread->updated_at->diffForHumans(),
-            'scheduled_at' => null === $thread->scheduled_at ? null : $thread->scheduled_at->diffForHumans(),
+            'status' => $thread->status,
+            'updated_at_diff' => $thread->updated_at->diffForHumans(),
+            'scheduled_at_diff' => null === $thread->scheduled_at ? null : $thread->scheduled_at->diffForHumans(),
         ];
     }
+
+    public function status(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                if (null === $attributes['scheduled_at']) {
+                    return 'draft';
+                } elseif ($attributes['scheduled_at'] > now()) {
+                    return 'scheduled';
+                } else {
+                    return 'posted';
+                }
+            }
+        );
+    }
+
+    // public function scheduledAtIso(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: function ($value, $attributes) {
+    //             return Str::of((new Carbon($attributes['scheduled_at']))->toIso8601String())->substr(0, 16);
+    //         }
+    //     );
+    // }
 }

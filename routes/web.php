@@ -5,6 +5,7 @@ use App\Http\Controllers\Profile\SocialApiKeyController;
 use App\Http\Controllers\Tweets\ComposeTweetController;
 use App\Http\Controllers\Tweets\ThreadController;
 use App\Http\Controllers\TwitterProfileController;
+use App\Jobs\SendThread;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,13 +48,23 @@ Route::middleware([
         Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
         Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
+        Route::put('/threads/{threadId}/status', [ThreadController::class, 'updateStatus'])->name('threads.status.update');
         Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
 
         Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
     });
+
+    // Twitter Profile Routes
     Route::get('/twitter-profile', [TwitterProfileController::class, 'index'])->name('twitter-profile.index');
     Route::get('/auth/twitter/redirect', [TwitterProfileController::class, 'addTwitterAccount'])->name('twitter-profile.create');
     Route::get('/auth/twitter/callback', [TwitterProfileController::class, 'store'])->name('twitter-profile.store');
     Route::put('/twitter-profile/select', [TwitterProfileController::class, 'updateSelectedProfile'])->name('twitter-profile.select.update');
     Route::delete('/twitter-profile/{twitterProfileId}', [TwitterProfileController::class, 'destroy'])->name('twitter-profile.destroy');
+});
+
+Route::get('/test', function () {
+    $thread = App\Models\Thread::find(4);
+    SendThread::dispatch($thread);
+
+    return redirect()->back();
 });

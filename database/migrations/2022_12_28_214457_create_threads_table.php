@@ -13,6 +13,8 @@ return new class() extends Migration {
         Schema::create('threads', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
+            $table->boolean('post_as_thread')->default(true);
+            $table->boolean('is_posted')->default(false);
             $table->dateTimeTz('scheduled_at')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('twitter_profile_id')->nullable()->constrained('twitter_profiles')->cascadeOnDelete();

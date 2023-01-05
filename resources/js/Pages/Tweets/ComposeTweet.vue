@@ -51,7 +51,7 @@ const addReply = async () => {
     });
 };
 
-const fetchMedia = () => {
+const refreshPage = () => {
     Inertia.visit(route("compose.index", props.thread.id), {
         preserveScroll: true,
     });
@@ -70,9 +70,10 @@ const fetchMedia = () => {
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
                 <div>
                     <ThreadInfo
-                        :threadId="props.thread.id"
+                        :thread="props.thread"
                         :profiles="props.profiles"
                         :selected-profile-id="props.selectedProfileId"
+                        @update:thread="refreshPage"
                     />
                 </div>
                 <SectionBorder />
@@ -121,7 +122,7 @@ const fetchMedia = () => {
 
                                 <Media
                                     :tweet="tweet"
-                                    @update-media="fetchMedia"
+                                    @update-media="refreshPage"
                                 />
                             </div>
                         </template>
@@ -134,7 +135,7 @@ const fetchMedia = () => {
                                 Saved.
                             </ActionMessage>
 
-                            <SecondaryButton @click="addReply()" class="mr-3"
+                            <SecondaryButton @click="addReply()"
                                 >Add</SecondaryButton
                             >
                         </template>

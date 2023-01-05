@@ -28,7 +28,13 @@ class ComposeTweetController extends Controller
         }
 
         return Inertia::render('Tweets/ComposeTweet', [
-            'thread' => $thread->only('id'),
+            'thread' => $thread->only(
+                'id',
+                'status',
+                'post_as_thread',
+                'is_posted',
+                'scheduled_at',
+            ),
             'tweets' => $thread->getTweetAndReplies(),
             'profiles' => Auth::user()->twitterProfiles,
             'selectedProfileId' => $thread->twitter_profile_id,

@@ -1,30 +1,65 @@
 <script setup>
 import { useForm } from "@inertiajs/inertia-vue3";
 import { ref } from "vue";
-import FormSection from "../../../Components/FormSection.vue";
-import InputLabel from "../../../Components/InputLabel.vue";
-import ActionMessage from "../../../Components/ActionMessage.vue";
+import FormSection from "@/Components/FormSection.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import ActionMessage from "@/Components/ActionMessage.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Checkbox from "@/Components/Checkbox.vue";
+import DateInput from "@/Components/DateInput.vue";
+import TimeInput from "@/Components/TimeInput.vue";
+import InputError from "@/Components/InputError.vue";
+
+const emit = defineEmits(["update:thread"]);
 
 const props = defineProps({
-    threadId: Number,
+    thread: Object,
     profiles: Array,
     selectedProfileId: Number,
 });
 
+let scheduledAt = new Date(props.thread.scheduled_at);
+scheduledAt = new Date(scheduledAt - scheduledAt.getTimezoneOffset() * 60000);
+const date = scheduledAt.toISOString().split("T")[0];
+const time = scheduledAt
+    .toISOString()
+    .split("T")[1]
+    .split(".")[0]
+    .substring(0, 5);
+
 const form = useForm({
     _method: "PUT",
     selectedProfileId: props.selectedProfileId,
+    postAsThread: props.thread.post_as_thread,
+    scheduledAtDate: date,
+    scheduledAtTime: time,
 });
 
-const updatethread = () => {
-    form.put(route("threads.update", props.threadId), {
+const formUpdateStatus = useForm({
+    _method: "PUT",
+    status: props.thread.status,
+});
+
+const updateStatus = (status) => {
+    formUpdateStatus.status = status;
+    formUpdateStatus.put(route("threads.status.update", props.thread.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            emit("update:thread");
+        },
+    });
+};
+
+const updateThread = () => {
+    form.put(route("threads.update", props.thread.id), {
         preserveScroll: true,
     });
 };
 
 const updateSelectedProfileId = (selectedProfileId) => {
     form.selectedProfileId = selectedProfileId;
-    updatethread();
+    updateThread();
 };
 
 const defaultClasses = ref("shadow");
@@ -69,12 +104,71 @@ const isSelected = (profileId) => {
                     </button>
                 </ul>
             </div>
+
+            <div class="col-span-6 sm:col-span-4 flex items-center space-x-2">
+                <Checkbox
+                    id="post-as-thread"
+                    v-model:checked="form.postAsThread"
+                    @update:checked="updateThread"
+                />
+                <InputLabel value="Post as thread" for="post-as-thread" />
+            </div>
+
+            <div
+                class="col-span-6 sm:col-span-4"
+                v-show="thread.status === 'scheduled'"
+            >
+                <InputLabel
+                    value="Scheduled at"
+                    for="scheduled-at"
+                    class="mb-2"
+                />
+                <DateInput
+                    class="mr-2"
+                    id="scheduled-at"
+                    v-model="form.scheduledAtDate"
+                    @change="updateThread"
+                />
+
+                <TimeInput
+                    id="scheduled-at"
+                    v-model="form.scheduledAtTime"
+                    @change="updateThread"
+                />
+
+                <InputError
+                    :message="form.errors.scheduledAtDate"
+                    class="mt-2"
+                />
+                <InputError
+                    :message="form.errors.scheduledAtTime"
+                    class="mt-2"
+                />
+            </div>
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="mr-3">
-                Saved.
-            </ActionMessage>
+            <div class="flex items-center justify-end space-x-3">
+                <ActionMessage :on="form.recentlySuccessful">
+                    Saved.
+                </ActionMessage>
+                <SecondaryButton>Delete</SecondaryButton>
+                <PrimaryButton
+                    @click="updateStatus('scheduled')"
+                    v-if="formUpdateStatus.status === 'draft'"
+                    >Publish</PrimaryButton
+                >
+                <SecondaryButton
+                    @click="updateStatus('draft')"
+                    v-if="formUpdateStatus.status === 'scheduled'"
+                    >Draft</SecondaryButton
+                >
+                <PrimaryButton
+                    @click="updateStatus('posted')"
+                    v-if="formUpdateStatus.status === 'scheduled'"
+                    >Post</PrimaryButton
+                >
+            </div>
         </template>
     </FormSection>
 </template>

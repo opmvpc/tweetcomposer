@@ -33,13 +33,14 @@ class TwitterApi
     protected static function sendThread(BirdElephant $api, Thread $thread)
     {
         $thread->tweets()->get()->each(function ($tweet) use ($api) {
-            $media = static::uploadMedia($api, $tweet);
+            $tweetObj = (new Tweet())->text($tweet->content);
 
-            $tweet = (new Tweet())->text($tweet->content)
-                ->media($media)
-            ;
+            if (!$tweet->media->isEmpty()) {
+                $media = static::uploadMedia($api, $tweet);
+                $tweetObj->media($media);
+            }
 
-            $api->tweets()->tweet($tweet);
+            $api->tweets()->tweet($tweetObj);
         });
     }
 

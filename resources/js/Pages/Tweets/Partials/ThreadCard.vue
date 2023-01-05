@@ -29,21 +29,27 @@ const props = defineProps({
             <div>
                 <div
                     class="text-xs flex space-x-1 items-center"
-                    v-if="thread.scheduled_at"
+                    v-if="
+                        thread.status === 'scheduled' ||
+                        thread.status === 'posted'
+                    "
                 >
-                    <CheckCircleIcon
-                        v-if="thread.scheduled_at.includes('ago')"
-                        class="h-5 w-5 text-green-600"
+                    <ClockIcon
+                        v-if="thread.status === 'scheduled'"
+                        class="h-5 w-5 text-gray-500"
                     />
-                    <ClockIcon v-else class="h-5 w-5 text-gray-500" />
+                    <CheckCircleIcon v-else class="h-5 w-5 text-green-600" />
                     <span>
-                        {{ thread.scheduled_at }}
+                        {{ thread.scheduled_at_diff }}
                     </span>
                 </div>
-                <div class="text-xs flex space-x-1 items-center" v-else>
+                <div
+                    class="text-xs flex space-x-1 items-center"
+                    v-if="thread.status === 'draft'"
+                >
                     <PencilSquareIcon class="h-5 w-5 text-gray-500" />
                     <span>
-                        {{ thread.updated_at }}
+                        {{ thread.updated_at_diff }}
                     </span>
                 </div>
             </div>
