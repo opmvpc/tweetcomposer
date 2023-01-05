@@ -35,16 +35,14 @@ Route::middleware([
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/profile/external-api-key', [ExternalApiKeyController::class, 'index'])->name('external-api-key.index');
-
         Route::put('/profile/external-api-key', [ExternalApiKeyController::class, 'update'])->name('external-api-key.update');
-
-        Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
-        Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
-        Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
 
         Route::put('/threads/{threadId}/status', [ThreadController::class, 'updateStatus'])->name('threads.status.update');
         Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
 
+        Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
+        Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
+        Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
         Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
     });
 

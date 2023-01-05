@@ -61,7 +61,7 @@ class Thread extends Model
         ;
     }
 
-    public static function getDrafts()
+    public static function getUserDrafts()
     {
         return static::drafts()
             ->where('user_id', auth()->user()->id)
@@ -73,7 +73,7 @@ class Thread extends Model
         ;
     }
 
-    public static function getScheduled()
+    public static function getUserScheduled()
     {
         return static::scheduled()
             ->where('user_id', auth()->user()->id)
@@ -85,7 +85,7 @@ class Thread extends Model
         ;
     }
 
-    public static function getPosted()
+    public static function getUserPosted()
     {
         return static::posted()
             ->where('user_id', auth()->user()->id)

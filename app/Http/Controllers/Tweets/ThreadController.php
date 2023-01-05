@@ -14,16 +14,20 @@ class ThreadController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Thread::class);
+
         return Inertia::render('Tweets/Tweets', [
-            'drafts' => Thread::getDrafts(),
-            'scheduled' => Thread::getScheduled(),
-            'posted' => Thread::getPosted(),
+            'drafts' => Thread::getUserDrafts(),
+            'scheduled' => Thread::getUserScheduled(),
+            'posted' => Thread::getUserPosted(),
         ]);
     }
 
     public function update(int $threadId, UpdateThreadRequest $request)
     {
         $thread = Thread::findOrFail($threadId);
+        $this->authorize('update', $thread);
+
         $thread->twitter_profile_id = $request->validated()['selectedProfileId'];
         $thread->post_as_thread = $request->validated()['postAsThread'];
         if (null !== $request->validated()['scheduledAtDate'] && null !== $request->validated()['scheduledAtTime']) {
@@ -44,6 +48,8 @@ class ThreadController extends Controller
     public function updateStatus(int $threadId, UpdateThreadStatusRequest $request)
     {
         $thread = Thread::findOrFail($threadId);
+        $this->authorize('update', $thread);
+
         $status = $request->validated()['status'];
 
         if ('draft' === $status) {

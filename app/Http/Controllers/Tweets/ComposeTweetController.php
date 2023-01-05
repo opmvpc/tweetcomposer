@@ -18,8 +18,12 @@ class ComposeTweetController extends Controller
     {
         if (null !== $threadId) {
             $thread = Thread::findOrFail($threadId);
+            $this->authorize('update', $thread);
         } else {
+            $this->authorize('create', Thread::class);
+
             $thread = Auth::user()->threads()->create(['title' => 'Untitled']);
+
             $thread->twitter_profile_id = Auth::user()->twitter_profile_id;
             $thread->save();
             $thread->tweets()->create();
@@ -43,14 +47,16 @@ class ComposeTweetController extends Controller
 
     public function update(TweetsRequest $request, int $threadId)
     {
+        $thread = Thread::findOrFail($threadId);
+        $this->authorize('update', $thread);
+
+        $thread->title = Str::limit($request->validated()['tweets'][0]['content'], 30) ?? 'Untitled';
+        $thread->save();
+
         foreach ($request->validated()['tweets'] as $tweet) {
             $current = Tweet::findOrFail($tweet['id']);
             $current->update($tweet);
         }
-
-        $thread = Thread::findOrFail($threadId);
-        $thread->title = Str::limit($request->validated()['tweets'][0]['content'], 30) ?? 'Untitled';
-        $thread->save();
 
         return redirect()->route('compose.index', ['threadId' => $threadId]);
     }
@@ -58,6 +64,7 @@ class ComposeTweetController extends Controller
     public function addReply(int $threadId)
     {
         $thread = Thread::findOrFail($threadId);
+        $this->authorize('update', $thread);
 
         $tweet = $thread->tweets()->create();
 
@@ -69,6 +76,7 @@ class ComposeTweetController extends Controller
     public function uploadMedia(UploadMediaRequest $request, int $tweetId)
     {
         $tweet = Tweet::findOrFail($tweetId);
+        $this->authorize('update', $tweet->thread);
 
         foreach ($request->validated()['files'] as $file) {
             $dir = sprintf('public/users/%d/tweets/%d', Auth::id(), $tweet->id);
