@@ -4,6 +4,10 @@ import InputError from "@/Components/InputError.vue";
 
 const props = defineProps({
     tweet: Object,
+    readonly: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["updateMedia"]);
@@ -37,7 +41,7 @@ const handleFilesUpload = (e) => {
                 />
             </div>
             <div
-                v-show="tweet.media.length < 4"
+                v-show="!readonly"
                 class="bg-gray-200 text-xs flex items-center justify-center min-h-12 rounded shadow cursor-pointer p-2 text-center"
                 @click="$refs.fileInput.click()"
             >

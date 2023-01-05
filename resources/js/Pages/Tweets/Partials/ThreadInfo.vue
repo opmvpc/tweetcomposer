@@ -91,6 +91,7 @@ const isSelected = (profileId) => {
                         @click="updateSelectedProfileId(profile.id)"
                         v-for="profile in props.profiles"
                         class="bg-white rounded-full flex space-x-2 pr-6"
+                        :disabled="thread.status !== 'draft'"
                         :class="
                             isSelected(profile.id)
                                 ? selectedClasses
@@ -114,30 +115,33 @@ const isSelected = (profileId) => {
                     id="post-as-thread"
                     v-model:checked="form.postAsThread"
                     @update:checked="updateThread"
+                    :disabled="thread.status !== 'draft'"
                 />
                 <InputLabel value="Post as thread" for="post-as-thread" />
             </div>
 
             <div
                 class="col-span-6 sm:col-span-4"
-                v-show="thread.status === 'scheduled'"
+                v-show="thread.status !== 'draft'"
             >
                 <InputLabel
                     value="Scheduled at"
-                    for="scheduled-at"
+                    for="scheduled-at-date"
                     class="mb-2"
                 />
                 <DateInput
                     class="mr-2"
-                    id="scheduled-at"
+                    id="scheduled-at-date"
                     v-model="form.scheduledAtDate"
                     @change="updateThread"
+                    :readonly="thread.status !== 'scheduled'"
                 />
 
                 <TimeInput
-                    id="scheduled-at"
+                    id="scheduled-at-time"
                     v-model="form.scheduledAtTime"
                     @change="updateThread"
+                    :readonly="thread.status !== 'scheduled'"
                 />
 
                 <InputError

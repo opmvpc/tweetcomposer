@@ -1,12 +1,11 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Profile\SocialApiKeyController;
+use App\Http\Controllers\Profile\ExternalApiKeyController;
 use App\Http\Controllers\Tweets\ComposeTweetController;
 use App\Http\Controllers\Tweets\ThreadController;
 use App\Http\Controllers\TwitterProfileController;
 use App\Jobs\SendThread;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
@@ -35,9 +34,9 @@ Route::middleware([
     ])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/profile/social-api-key', [SocialApiKeyController::class, 'index'])->name('social-api-key.index');
+        Route::get('/profile/external-api-key', [ExternalApiKeyController::class, 'index'])->name('external-api-key.index');
 
-        Route::put('/profile/social-api-key', [SocialApiKeyController::class, 'update'])->name('social-api-key.update');
+        Route::put('/profile/external-api-key', [ExternalApiKeyController::class, 'update'])->name('external-api-key.update');
 
         Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
         Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
@@ -57,9 +56,9 @@ Route::middleware([
     Route::delete('/twitter-profile/{twitterProfileId}', [TwitterProfileController::class, 'destroy'])->name('twitter-profile.destroy');
 });
 
-Route::get('/test', function () {
-    $thread = App\Models\Thread::find(11);
-    SendThread::dispatch($thread);
+// Route::get('/test', function () {
+//     $thread = App\Models\Thread::find(11);
+//     SendThread::dispatch($thread);
 
-    return redirect()->back();
-});
+//     return redirect()->back();
+// });

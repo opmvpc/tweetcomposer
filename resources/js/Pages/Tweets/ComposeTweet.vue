@@ -103,6 +103,7 @@ const refreshPage = () => {
                                     type="text"
                                     class="mt-1 block w-full"
                                     @input="updateTweets"
+                                    :readonly="thread.status !== 'draft'"
                                 />
                                 <div class="grid grid-cols-3 mt-2">
                                     <div class="col-span-2">
@@ -123,6 +124,7 @@ const refreshPage = () => {
                                 <Media
                                     :tweet="tweet"
                                     @update-media="refreshPage"
+                                    :readonly="thread.status !== 'draft'"
                                 />
                             </div>
                         </template>
@@ -135,7 +137,9 @@ const refreshPage = () => {
                                 Saved.
                             </ActionMessage>
 
-                            <SecondaryButton @click="addReply()"
+                            <SecondaryButton
+                                @click="addReply()"
+                                v-show="thread.status === 'draft'"
                                 >Add</SecondaryButton
                             >
                         </template>

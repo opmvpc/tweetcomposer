@@ -278,10 +278,18 @@ const logout = () => {
 
                                         <DropdownLink
                                             :href="
-                                                route('social-api-key.index')
+                                                route('twitter-profile.index')
                                             "
                                         >
-                                            Social API keys
+                                            Twitter profiles
+                                        </DropdownLink>
+
+                                        <DropdownLink
+                                            :href="
+                                                route('external-api-key.index')
+                                            "
+                                        >
+                                            External API keys
                                         </DropdownLink>
 
                                         <DropdownLink
@@ -365,6 +373,20 @@ const logout = () => {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('threads.index')"
+                            :active="route().current('threads.index')"
+                        >
+                            Tweets
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('compose.index')"
+                            :active="route().current('compose.index')"
+                        >
+                            Compose
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -401,6 +423,24 @@ const logout = () => {
                                 :active="route().current('profile.show')"
                             >
                                 Profile
+                            </ResponsiveNavLink>
+
+                            <ResponsiveNavLink
+                                :href="route('twitter-profile.index')"
+                                :active="
+                                    route().current('twitter-profile.index')
+                                "
+                            >
+                                Twitter profiles
+                            </ResponsiveNavLink>
+
+                            <ResponsiveNavLink
+                                :href="route('external-api-key.index')"
+                                :active="
+                                    route().current('external-api-key.index')
+                                "
+                            >
+                                External API keys
                             </ResponsiveNavLink>
 
                             <ResponsiveNavLink
