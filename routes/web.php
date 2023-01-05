@@ -7,8 +7,8 @@ use App\Http\Controllers\Tweets\ThreadController;
 use App\Http\Controllers\TwitterProfileController;
 use App\Jobs\SendThread;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,12 +22,7 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Redirect::route('login');
 });
 
 Route::middleware([
@@ -63,7 +58,7 @@ Route::middleware([
 });
 
 Route::get('/test', function () {
-    $thread = App\Models\Thread::find(4);
+    $thread = App\Models\Thread::find(11);
     SendThread::dispatch($thread);
 
     return redirect()->back();

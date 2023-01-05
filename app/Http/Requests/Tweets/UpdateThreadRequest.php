@@ -26,8 +26,18 @@ class UpdateThreadRequest extends FormRequest
      */
     public function rules()
     {
-        $scheduledAtTimeRules = [Rule::requiredIf('scheduled' === Thread::findOrFail($this->thread)->status), 'date_format:H:i'];
+        $scheduledAtDateRules = [Rule::requiredIf('scheduled' === Thread::findOrFail($this->thread)->status)];
 
+        if (null !== $this->scheduledAtDate) {
+            $scheduledAtDateRules[] = 'date_format:Y-m-d';
+            $scheduledAtDateRules[] = 'after_or_equal:today';
+        }
+
+        $scheduledAtTimeRules = [Rule::requiredIf('scheduled' === Thread::findOrFail($this->thread)->status)];
+
+        if (null !== $this->scheduledAtTime) {
+            $scheduledAtTimeRules[] = 'date_format:H:i';
+        }
         if (now()->format('Y-m-d') === $this->scheduledAtDate) {
             $scheduledAtTimeRules[] = new TimeHigherThanNow();
         }
@@ -35,7 +45,7 @@ class UpdateThreadRequest extends FormRequest
         return [
             'selectedProfileId' => ['required', 'integer', 'exists:twitter_profiles,id'],
             'postAsThread' => ['required', 'boolean'],
-            'scheduledAtDate' => [Rule::requiredIf('scheduled' === Thread::findOrFail($this->thread)->status), 'date_format:Y-m-d', 'after_or_equal:today'],
+            'scheduledAtDate' => $scheduledAtDateRules,
             'scheduledAtTime' => $scheduledAtTimeRules,
         ];
     }

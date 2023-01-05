@@ -5,6 +5,7 @@ namespace App\Services\Twitter;
 use App\Models\Thread;
 use Coderjerk\BirdElephant\BirdElephant;
 use Coderjerk\BirdElephant\Compose\Media;
+use Coderjerk\BirdElephant\Compose\Reply;
 use Coderjerk\BirdElephant\Compose\Tweet;
 
 class TwitterApi
@@ -32,7 +33,11 @@ class TwitterApi
 
     protected static function sendThread(BirdElephant $api, Thread $thread)
     {
-        $thread->tweets()->get()->each(function ($tweet) use ($api) {
+        $tweets = $thread->tweets()->get()->filter(function ($tweet) {
+            return (null !== $tweet->content && '' !== $tweet->content) || !$tweet->media->isEmpty();
+        })->values();
+
+        foreach ($tweets as $index => $tweet) {
             $tweetObj = (new Tweet())->text($tweet->content);
 
             if (!$tweet->media->isEmpty()) {
@@ -40,8 +45,15 @@ class TwitterApi
                 $tweetObj->media($media);
             }
 
-            $api->tweets()->tweet($tweetObj);
-        });
+            if ($index > 0) {
+                $reply = (new Reply())->inReplyToTweetId($tweets[$index - 1]->twitter_api_id);
+                $tweetObj->reply($reply);
+            }
+
+            $response = $api->tweets()->tweet($tweetObj);
+            $tweet->twitter_api_id = $response->data->id;
+            $tweet->save();
+        }
     }
 
     protected static function uploadMedia(BirdElephant $api, $tweet): Media

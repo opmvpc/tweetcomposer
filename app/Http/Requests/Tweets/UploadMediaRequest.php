@@ -31,4 +31,11 @@ class UploadMediaRequest extends FormRequest
             'files.*' => ['required', 'file', 'mimes:jpg,jpeg,png,gif', 'max:10240'],
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'files' => 'uploaded files list',
+        ];
+    }
 }

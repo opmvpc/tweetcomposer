@@ -26,13 +26,18 @@ class ThreadController extends Controller
         $thread = Thread::findOrFail($threadId);
         $thread->twitter_profile_id = $request->validated()['selectedProfileId'];
         $thread->post_as_thread = $request->validated()['postAsThread'];
-        $thread->scheduled_at = new Carbon(
-            sprintf(
-                '%s %s',
-                $request->validated()['scheduledAtDate'],
-                $request->validated()['scheduledAtTime']
-            )
-        );
+        if (null !== $request->validated()['scheduledAtDate'] && null !== $request->validated()['scheduledAtTime']) {
+            $thread->scheduled_at = new Carbon(
+                sprintf(
+                    '%s %s',
+                    $request->validated()['scheduledAtDate'],
+                    $request->validated()['scheduledAtTime']
+                )
+            );
+        } else {
+            $thread->scheduled_at = null;
+        }
+
         $thread->save();
     }
 

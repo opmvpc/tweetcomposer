@@ -28,4 +28,12 @@ class TweetsRequest extends FormRequest
             'tweets.*.content' => 'nullable|string|max:280',
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'tweets.*.id' => 'tweet id',
+            'tweets.*.content' => 'tweet content',
+        ];
+    }
 }

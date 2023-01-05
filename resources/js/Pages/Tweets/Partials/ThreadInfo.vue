@@ -52,6 +52,10 @@ const updateStatus = (status) => {
 };
 
 const updateThread = () => {
+    if (formUpdateStatus.status !== "scheduled") {
+        form.scheduledAtDate = null;
+        form.scheduledAtTime = null;
+    }
     form.put(route("threads.update", props.thread.id), {
         preserveScroll: true,
     });

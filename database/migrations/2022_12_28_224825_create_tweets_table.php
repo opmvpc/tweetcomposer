@@ -13,6 +13,7 @@ return new class() extends Migration {
         Schema::create('tweets', function (Blueprint $table) {
             $table->id();
             $table->string('content', 280)->nullable();
+            $table->string('twitter_api_id')->nullable()->default(null);
             $table->foreignId('thread_id')->nullable()->constrained('threads')->cascadeOnDelete();
             $table->timestamps();
         });
