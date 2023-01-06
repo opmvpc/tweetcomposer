@@ -4,11 +4,17 @@ namespace Deployer;
 
 require 'recipe/laravel.php';
 
+// Config
+set('bin/php', function () {
+    return which('php8.0');
+});
+
+set('bin/composer', function () {
+    return 'php8.0 /usr/local/bin/composer';
+});
+
 // Project name
 set('application', 'tweetcomposer');
-
-// Config
-set('bin/php', '/usr/bin/php8.0');
 
 set('repository', 'https://github.com/opmvpc/tweetcomposer.git');
 
