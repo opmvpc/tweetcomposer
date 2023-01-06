@@ -8,6 +8,7 @@ require 'recipe/laravel.php';
 set('application', 'tweetcomposer');
 
 // Config
+set('bin/php', '/usr/bin/php8.0');
 
 set('repository', 'https://github.com/opmvpc/tweetcomposer.git');
 
