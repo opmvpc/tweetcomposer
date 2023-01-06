@@ -29,15 +29,15 @@ task('build', function () {
     run('cd {{release_path}} && build');
 });
 
-task('npm:run:prod', function () {
-    cd('{{release_path}}');
-    run('npm install');
-    run('npm run build');
-});
+// task('npm:run:prod', function () {
+//     cd('{{release_path}}');
+//     run('npm install');
+//     run('npm run build');
+// });
 
 // Hooks
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 // Migrate database before symlink new release.
-before('deploy:symlink', 'artisan:migrate');
-after('artisan:migrate', 'npm:run:prod');
+// before('deploy:symlink', 'artisan:migrate');
+// after('artisan:migrate', 'npm:run:prod');
