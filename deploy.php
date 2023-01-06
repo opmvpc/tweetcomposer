@@ -37,9 +37,6 @@ task('npm:run:prod', function () {
 
 // Hooks
 // [Optional] if deploy fails automatically unlock.
-after('deploy:prepare', 'deploy:unlock');
-// Migrate database before symlink new release.
-before('deploy:setup', 'artisan:down');
+before('deploy:prepare', 'deploy:unlock');
 after('artisan:migrate', 'artisan:queue:restart');
 after('artisan:queue:restart', 'npm:run:prod');
-after('deploy:success', 'artisan:up');
