@@ -18,9 +18,9 @@ const props = defineProps({
         :href="route('compose.index', [thread.id])"
         class="bg-white p-4 rounded shadow flex flex-col space-y-2"
     >
-        <div>
+        <div class="text-sm text-gray-900">
             <img
-                class="float-right rounded-full border-gray-300 border-4 h-12 w-12 ml-2"
+                class="float-right rounded-full border-indigo-300 border-4 h-12 w-12 ml-2"
                 :src="thread.twitter_profile.avatar"
             />
             {{ thread.title }}
@@ -36,10 +36,10 @@ const props = defineProps({
                 >
                     <ClockIcon
                         v-if="thread.status === 'scheduled'"
-                        class="h-5 w-5 text-gray-500"
+                        class="h-5 w-5 text-gray-400"
                     />
                     <CheckCircleIcon v-else class="h-5 w-5 text-green-600" />
-                    <span>
+                    <span class="text-gray-600">
                         {{ thread.scheduled_at_diff }}
                     </span>
                 </div>
@@ -47,17 +47,17 @@ const props = defineProps({
                     class="text-xs flex space-x-1 items-center"
                     v-if="thread.status === 'draft'"
                 >
-                    <PencilSquareIcon class="h-5 w-5 text-gray-500" />
-                    <span>
+                    <PencilSquareIcon class="h-5 w-5 text-gray-400" />
+                    <span class="text-gray-600">
                         {{ thread.updated_at_diff }}
                     </span>
                 </div>
             </div>
             <div class="text-xs flex items-center space-x-1">
-                <span>
+                <span class="text-gray-600 font-mono">
                     {{ thread.tweets_count }}
                 </span>
-                <ChatBubbleOvalLeftEllipsisIcon class="h-5 w-5 text-gray-500" />
+                <ChatBubbleOvalLeftEllipsisIcon class="h-5 w-5 text-gray-400" />
             </div>
         </div>
     </Link>

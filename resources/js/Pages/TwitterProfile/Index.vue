@@ -31,7 +31,7 @@ const props = defineProps({
                     class="bg-green-200 text-green-700 shadow rounded-lg p-4 mt-8"
                 >
                     <p class="mb-2 text-lg">👋 Welcome !</p>
-                    <p>
+                        <p>
                         To get started, you will need to add a Twitter profile.
                         <br />
                         Please click on the button below 👇.

@@ -68,7 +68,9 @@ const updateSelectedProfileId = (selectedProfileId) => {
 
 const defaultClasses = ref("shadow");
 
-const selectedClasses = ref("shadow-md border-4 border-blue-200 bg-blue-50");
+const selectedClasses = ref(
+    "shadow-md border-4 border-indigo-300 bg-indigo-50"
+);
 
 const isSelected = (profileId) => {
     return profileId === form.selectedProfileId;

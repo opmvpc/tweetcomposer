@@ -20,7 +20,7 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 gap-20">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-20">
                     <div>
                         <SectionTitle>
                             <template #title> Twitter profiles </template>
