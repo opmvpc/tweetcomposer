@@ -31,7 +31,7 @@ task('build', function () {
 
 task('npm:run:prod', function () {
     cd('{{release_path}}');
-    run('npm install');
+    run('npm ci');
     run('npm run build');
 });
 
@@ -40,4 +40,5 @@ task('npm:run:prod', function () {
 after('deploy:failed', 'deploy:unlock');
 // Migrate database before symlink new release.
 before('deploy:symlink', 'artisan:migrate');
-after('artisan:migrate', 'npm:run:prod');
+after('artisan:migrate', 'artisan:queue:restart');
+after('deploy:update_code', 'npm:run:prod');

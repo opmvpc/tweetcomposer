@@ -61,7 +61,7 @@
             "pint"
         ],
         "deploy": [
-            "dep deploy -vvv"
+            "dep deploy"
         ],
         "ssh": [
             "dep ssh"
