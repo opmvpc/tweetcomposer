@@ -31,7 +31,7 @@ task('build', function () {
 
 task('npm:run:prod', function () {
     cd('{{release_path}}');
-    run('npm ci');
+    run('npm i');
     run('npm run build');
 });
 
