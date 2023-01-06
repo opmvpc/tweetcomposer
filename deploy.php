@@ -41,4 +41,4 @@ after('deploy:failed', 'deploy:unlock');
 // Migrate database before symlink new release.
 before('deploy:symlink', 'artisan:migrate');
 after('artisan:migrate', 'artisan:queue:restart');
-after('deploy:update_code', 'npm:run:prod');
+after('artisan:queue:restart', 'npm:run:prod');
