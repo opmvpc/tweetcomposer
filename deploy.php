@@ -34,7 +34,7 @@ task('build', function () {
 task('npm:run:prod', function () {
     cd('{{release_path}}');
     run('npm install');
-    run('npx mix -p');
+    run('npm run build');
 });
 
 // [Optional] if deploy fails automatically unlock.
