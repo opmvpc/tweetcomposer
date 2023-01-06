@@ -5,7 +5,6 @@ use App\Http\Controllers\Profile\ExternalApiKeyController;
 use App\Http\Controllers\Tweets\ComposeTweetController;
 use App\Http\Controllers\Tweets\ThreadController;
 use App\Http\Controllers\TwitterProfileController;
-use App\Jobs\SendThread;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
