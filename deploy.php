@@ -19,13 +19,9 @@ host('tsix.be')
     ->set('deploy_path', '/var/www/laravel/{{application}}')
     ->set('identityFile', '~/.ssh/id_ed25519')
     ->set('remote_user', 'root')
-    ->set('bin/php', function () {
-        return which('php8.0');
+    ->set('bin/deployer', function () {
+        return 'php8.1 ./vendor/bin/dep';
     })
-    ->set('bin/composer', function () {
-        return 'php8.0 /usr/local/bin/composer';
-    })
-
 ;
 
 // Tasks
