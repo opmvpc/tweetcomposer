@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Thread extends Model
 {
@@ -140,5 +141,17 @@ class Thread extends Model
             'updated_at_diff' => $thread->updated_at->diffForHumans(),
             'scheduled_at_diff' => null === $thread->scheduled_at ? null : $thread->scheduled_at->diffForHumans(),
         ];
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::deleting(function (Thread $thread) {
+            $thread->tweets()->get()->each(function ($tweet) {
+                Storage::disk('local')->deleteDirectory("public/users/{$tweet->thread->user_id}/tweets/{$tweet->id}");
+            });
+        });
     }
 }

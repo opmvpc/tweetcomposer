@@ -64,4 +64,14 @@ class ThreadController extends Controller
 
         $thread->save();
     }
+
+    public function destroy(int $threadId)
+    {
+        $thread = Thread::findOrFail($threadId);
+        $this->authorize('delete', $thread);
+
+        $thread->delete();
+
+        return redirect()->route('threads.index')->banner('Thread deleted successfully!');
+    }
 }

@@ -5,6 +5,7 @@ import FormSection from "@/Components/FormSection.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import LinkButton from "@/Components/LinkButton.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
 import ActionMessage from "@/Components/ActionMessage.vue";
 import { ref } from "vue";
@@ -12,6 +13,8 @@ import Media from "./Partials/Media.vue";
 import { Inertia } from "@inertiajs/inertia";
 import ThreadInfo from "./Partials/ThreadInfo.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps({
     thread: Object,
@@ -56,6 +59,30 @@ const refreshPage = () => {
         preserveScroll: true,
     });
 };
+
+const confirmingTweetDeletion = ref(false);
+const tweetIdToDelete = ref(0);
+const confirmTweetDeletion = (tweetId) => {
+    tweetIdToDelete.value = tweetId;
+    confirmingTweetDeletion.value = true;
+};
+const deleteTweetForm = useForm({
+    _method: "DELETE",
+});
+const deleteTweet = () => {
+    deleteTweetForm.delete(
+        route("compose.tweet.destroy", tweetIdToDelete.value),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                confirmingTweetDeletion.value = false;
+                Inertia.visit(route("compose.index", props.thread.id), {
+                    preserveScroll: true,
+                });
+            },
+        }
+    );
+};
 </script>
 
 <template>
@@ -82,8 +109,10 @@ const refreshPage = () => {
                         <template #title> Compose your next Tweet </template>
 
                         <template #description>
-                            Write your tweet here. Click on the "Add" button to
-                            add more tweets.
+                            Compose your tweet in this field. To add more tweets
+                            to the thread, click the 'Add' button. You can also
+                            include media such as images or videos in your tweet
+                            by clicking the 'Add Media' button.
                         </template>
 
                         <template #form>
@@ -91,12 +120,22 @@ const refreshPage = () => {
                                 v-for="(tweet, index) in form.tweets"
                                 class="col-span-6 sm:col-span-4"
                             >
-                                <InputLabel
-                                    :for="`tweet-${index}`"
-                                    :value="`Tweet ${index + 1}/${
-                                        form.tweets.length
-                                    }`"
-                                />
+                                <div class="flex items-center justify-between">
+                                    <InputLabel
+                                        :for="`tweet-${index}`"
+                                        :value="`Tweet ${index + 1}/${
+                                            form.tweets.length
+                                        }`"
+                                    />
+                                    <LinkButton
+                                        @click="confirmTweetDeletion(tweet.id)"
+                                        v-show="
+                                            thread.status === 'draft' &&
+                                            form.tweets.length > 1
+                                        "
+                                        >Delete</LinkButton
+                                    >
+                                </div>
                                 <TextareaInput
                                     :id="`tweet-${index}`"
                                     v-model="tweet.content"
@@ -148,4 +187,30 @@ const refreshPage = () => {
             </div>
         </div>
     </AppLayout>
+    <ConfirmationModal
+        :show="confirmingTweetDeletion"
+        @close="confirmingTweetDeletion = false"
+    >
+        <template #title> Delete Tweet </template>
+
+        <template #content>
+            Are you sure you want to delete this tweet? Once it is deleted, all
+            of its resources and data will be permanently deleted.
+        </template>
+
+        <template #footer>
+            <SecondaryButton @click.native="confirmingTweetDeletion = false">
+                Nevermind
+            </SecondaryButton>
+
+            <DangerButton
+                class="ml-2"
+                @click.native="deleteTweet()"
+                :class="{ 'opacity-25': deleteTweetForm.processing }"
+                :disabled="deleteTweetForm.processing"
+            >
+                Delete Tweet
+            </DangerButton>
+        </template>
+    </ConfirmationModal>
 </template>

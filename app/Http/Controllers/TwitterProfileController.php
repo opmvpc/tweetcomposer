@@ -44,7 +44,7 @@ class TwitterProfileController extends Controller
             $user->save();
         }
 
-        return redirect()->route('twitter-profile.index');
+        return redirect()->route('twitter-profile.index')->banner('Twitter profile added successfully!');
     }
 
     public function updateSelectedProfile(SelectProfileRequest $request)
@@ -52,6 +52,9 @@ class TwitterProfileController extends Controller
         $user = Auth::user();
         $user->twitter_profile_id = $request->validated()['selectedProfileId'];
         $user->save();
+
+        $request->session()->flash('flash.banner', 'Your default Twitter profile has been successfully changed!');
+        $request->session()->flash('flash.bannerStyle', 'success');
     }
 
     public function destroy(int $twitterProfileId)
@@ -59,6 +62,16 @@ class TwitterProfileController extends Controller
         $twitterProfile = TwitterProfile::findOrFail($twitterProfileId);
         $twitterProfile->delete();
 
-        return redirect()->route('twitter-profile.index');
+        $user = Auth::user();
+        if (null === $user->selectedTwitterProfile) {
+            // change the default profile to the first one
+            $firstProfile = $user->twitterProfiles()->first();
+            if (null !== $firstProfile) {
+                $user->twitter_profile_id = $firstProfile->id;
+                $user->save();
+            }
+        }
+
+        return redirect()->back()->banner('Twitter profile deleted successfully!');
     }
 }

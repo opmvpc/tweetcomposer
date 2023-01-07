@@ -2,10 +2,37 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SectionTitle from "@/Components/SectionTitle.vue";
+import { ref } from "vue";
+import { useForm } from "@inertiajs/inertia-vue3";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const props = defineProps({
     profiles: Array,
 });
+
+const confirmingProfileDeletion = ref(false);
+const profileIdToDelete = ref(0);
+const confirmProfileDeletion = (tweetId) => {
+    profileIdToDelete.value = tweetId;
+    confirmingProfileDeletion.value = true;
+};
+const deleteProfileForm = useForm({
+    _method: "DELETE",
+});
+
+const deleteProfile = () => {
+    deleteProfileForm.delete(
+        route("twitter-profile.destroy", profileIdToDelete.value),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                confirmingProfileDeletion.value = false;
+            },
+        }
+    );
+};
 </script>
 
 <template>
@@ -31,7 +58,7 @@ const props = defineProps({
                     class="bg-green-200 text-green-700 shadow rounded-lg p-4 mt-8"
                 >
                     <p class="mb-2 text-lg">👋 Welcome !</p>
-                        <p>
+                    <p>
                         To get started, you will need to add a Twitter profile.
                         <br />
                         Please click on the button below 👇.
@@ -52,7 +79,10 @@ const props = defineProps({
                             @{{ profile.nickname }}
                         </div>
                         <div class="flex-grow flex items-center justify-end">
-                            <PrimaryButton>Delete</PrimaryButton>
+                            <PrimaryButton
+                                @click="confirmProfileDeletion(profile.id)"
+                                >Delete</PrimaryButton
+                            >
                         </div>
                     </li>
 
@@ -66,4 +96,30 @@ const props = defineProps({
             </div>
         </div>
     </AppLayout>
+    <ConfirmationModal
+        :show="confirmingProfileDeletion"
+        @close="confirmingProfileDeletion = false"
+    >
+        <template #title> Delete Twitter profile </template>
+
+        <template #content>
+            Are you sure you want to delete this profile? Once it is deleted,
+            all of its resources and data will be permanently deleted.
+        </template>
+
+        <template #footer>
+            <SecondaryButton @click.native="confirmingProfileDeletion = false">
+                Nevermind
+            </SecondaryButton>
+
+            <DangerButton
+                class="ml-2"
+                @click.native="deleteProfile()"
+                :class="{ 'opacity-25': deleteProfileForm.processing }"
+                :disabled="deleteProfileForm.processing"
+            >
+                Delete profile
+            </DangerButton>
+        </template>
+    </ConfirmationModal>
 </template>

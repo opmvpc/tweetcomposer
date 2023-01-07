@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TwitterProfile extends Model
 {
@@ -43,5 +44,19 @@ class TwitterProfile extends Model
     public function threads()
     {
         return $this->hasMany(Thread::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::deleting(function (TwitterProfile $twitterProfile) {
+            $twitterProfile->threads->each(function (Thread $thread) {
+                $thread->tweets()->get()->each(function ($tweet) {
+                    Storage::disk('local')->deleteDirectory("public/users/{$tweet->thread->user_id}/tweets/{$tweet->id}");
+                });
+            });
+        });
     }
 }

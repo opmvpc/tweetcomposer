@@ -10,6 +10,8 @@ import Checkbox from "@/Components/Checkbox.vue";
 import DateInput from "@/Components/DateInput.vue";
 import TimeInput from "@/Components/TimeInput.vue";
 import InputError from "@/Components/InputError.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 const emit = defineEmits(["update:thread"]);
 
@@ -75,6 +77,16 @@ const selectedClasses = ref(
 const isSelected = (profileId) => {
     return profileId === form.selectedProfileId;
 };
+
+const confirmingThreadDeletion = ref(false);
+const deleteThreadForm = useForm({
+    _method: "DELETE",
+});
+const deleteThread = () => {
+    deleteThreadForm.delete(route("threads.destroy", props.thread.id), {
+        preserveScroll: true,
+    });
+};
 </script>
 
 <template>
@@ -82,7 +94,9 @@ const isSelected = (profileId) => {
         <template #title> Thread settings </template>
 
         <template #description>
-            Choose the Twitter profile that will be used to post the thread.
+            Adjust your thread settings. Select the Twitter profile that you
+            want to use to post the thread and set the date and time that you
+            want it to be published.
         </template>
 
         <template #form>
@@ -162,7 +176,9 @@ const isSelected = (profileId) => {
                 <ActionMessage :on="form.recentlySuccessful">
                     Saved.
                 </ActionMessage>
-                <SecondaryButton>Delete</SecondaryButton>
+                <SecondaryButton @click="confirmingThreadDeletion = true">
+                    Delete</SecondaryButton
+                >
                 <PrimaryButton
                     @click="updateStatus('scheduled')"
                     v-if="formUpdateStatus.status === 'draft'"
@@ -181,4 +197,30 @@ const isSelected = (profileId) => {
             </div>
         </template>
     </FormSection>
+    <ConfirmationModal
+        :show="confirmingThreadDeletion"
+        @close="confirmingThreadDeletion = false"
+    >
+        <template #title> Delete Thread </template>
+
+        <template #content>
+            Are you sure you want to delete this thread? Once it is deleted, all
+            of its resources and data will be permanently deleted.
+        </template>
+
+        <template #footer>
+            <SecondaryButton @click.native="confirmingThreadDeletion = false">
+                Nevermind
+            </SecondaryButton>
+
+            <DangerButton
+                class="ml-2"
+                @click.native="deleteThread()"
+                :class="{ 'opacity-25': deleteThreadForm.processing }"
+                :disabled="deleteThreadForm.processing"
+            >
+                Delete Thread
+            </DangerButton>
+        </template>
+    </ConfirmationModal>
 </template>

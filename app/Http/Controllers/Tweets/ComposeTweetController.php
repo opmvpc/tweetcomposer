@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tweets;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tweets\TweetsRequest;
 use App\Http\Requests\Tweets\UploadMediaRequest;
+use App\Models\Medium;
 use App\Models\Thread;
 use App\Models\Tweet;
 use Illuminate\Support\Facades\Auth;
@@ -86,5 +87,21 @@ class ComposeTweetController extends Controller
                 'url' => Storage::url($path),
             ]);
         }
+    }
+
+    public function destroyTweet(int $tweetId)
+    {
+        $tweet = Tweet::findOrFail($tweetId);
+        $this->authorize('delete', $tweet->thread);
+
+        $tweet->delete();
+    }
+
+    public function destroyMedia(int $mediaId)
+    {
+        $media = Medium::findOrFail($mediaId);
+        $this->authorize('delete', $media->tweet->thread);
+
+        $media->delete();
     }
 }

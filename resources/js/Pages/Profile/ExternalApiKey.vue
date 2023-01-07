@@ -39,8 +39,8 @@ const updateSocialKeys = () => {
                         <template #title> Api keys </template>
 
                         <template #description>
-                            Please provide your external api keys here. You can
-                            get them from your developer account.
+                            Enter your external API keys here. These can be
+                            obtained from your developer account.
                         </template>
 
                         <template #form>

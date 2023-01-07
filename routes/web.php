@@ -37,12 +37,14 @@ Route::middleware([
         Route::put('/profile/external-api-key', [ExternalApiKeyController::class, 'update'])->name('external-api-key.update');
 
         Route::put('/threads/{threadId}/status', [ThreadController::class, 'updateStatus'])->name('threads.status.update');
-        Route::resource('/threads', ThreadController::class)->only(['index', 'update']);
+        Route::resource('/threads', ThreadController::class)->only(['index', 'update', 'destroy']);
 
         Route::get('/compose/{threadId?}', [ComposeTweetController::class, 'index'])->name('compose.index');
         Route::put('/compose/{threadId?}', [ComposeTweetController::class, 'update'])->name('compose.update');
         Route::post('/compose/{threadId}/add-reply', [ComposeTweetController::class, 'addReply'])->name('compose.add-reply');
         Route::post('media/{tweetId}', [ComposeTweetController::class, 'uploadMedia'])->name('media.upload');
+        Route::delete('media/{mediaId}', [ComposeTweetController::class, 'destroyMedia'])->name('media.destroy');
+        Route::delete('/compose/delete-tweet/{tweetIdToDelete}', [ComposeTweetController::class, 'destroyTweet'])->name('compose.tweet.destroy');
     });
 
     // Twitter Profile Routes
