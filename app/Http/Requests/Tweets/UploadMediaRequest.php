@@ -28,7 +28,7 @@ class UploadMediaRequest extends FormRequest
 
         return [
             'files' => ['required', 'array', sprintf('max:%s', 4 - $mediaCount)],
-            'files.*' => ['required', 'file', 'mimes:jpg,jpeg,png,gif', 'max:10240'],
+            'files.*' => ['required', 'file', 'mimes:jpg,jpeg,png,gif,mp4', 'max:100000'],
         ];
     }
 
