@@ -176,7 +176,10 @@ const deleteThread = () => {
                 <ActionMessage :on="form.recentlySuccessful">
                     Saved.
                 </ActionMessage>
-                <SecondaryButton @click="confirmingThreadDeletion = true">
+                <SecondaryButton
+                    v-if="formUpdateStatus.status !== 'posted'"
+                    @click="confirmingThreadDeletion = true"
+                >
                     Delete</SecondaryButton
                 >
                 <PrimaryButton
