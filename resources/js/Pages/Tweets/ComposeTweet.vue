@@ -111,8 +111,9 @@ const deleteTweet = () => {
                         <template #description>
                             Compose your tweet in this field. To add more tweets
                             to the thread, click the 'Add' button. You can also
-                            include media such as images or videos in your tweet
-                            by clicking the 'Add Media' button.
+                            include images in your tweet by clicking the 'Add
+                            Media' button. <br /><br />❗ Video upload to
+                            Twitter is not yet supported ❗
                         </template>
 
                         <template #form>

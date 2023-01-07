@@ -48,8 +48,8 @@ const deleteProfile = () => {
                 <SectionTitle>
                     <template #title> Twitter profiles </template>
                     <template #description>
-                        Manage your Twitter profiles here. You can add as many
-                        as needed.
+                        Here you can manage your Twitter profiles. You can add
+                        as many profiles as you need.
                     </template>
                 </SectionTitle>
 
@@ -59,9 +59,10 @@ const deleteProfile = () => {
                 >
                     <p class="mb-2 text-lg">👋 Welcome !</p>
                     <p>
-                        To get started, you will need to add a Twitter profile.
+                        To begin using the tool, you will need to add at least
+                        one Twitter profile.
                         <br />
-                        Please click on the button below 👇.
+                        Click the button below to continue. 👇
                     </p>
                 </div>
 
